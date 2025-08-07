@@ -1,0 +1,222 @@
+<template>
+    <lightning-card title="Payment Status" icon-name="utility:payment_gateway">
+        <template if:true={paymentData}>
+            <div class="slds-card__body slds-card__body_inner">
+                <div class="slds-grid slds-gutters slds-wrap">
+                    <!-- Status Badge -->
+                    <div class="slds-col slds-size_1-of-1">
+                        <div class="slds-m-bottom_medium">
+                            <lightning-badge 
+                                label={paymentData.Status__c}
+                                variant={statusVariant}
+                                class="status-badge">
+                            </lightning-badge>
+                            <lightning-icon 
+                                icon-name={statusIcon} 
+                                size="small" 
+                                class="slds-m-left_x-small">
+                            </lightning-icon>
+                        </div>
+                    </div>
+
+                    <!-- Payment Details -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <dl class="slds-list_horizontal slds-wrap">
+                            <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                                Transaction ID:
+                            </dt>
+                            <dd class="slds-item_detail slds-truncate">
+                                <lightning-formatted-text 
+                                    value={paymentData.Name}>
+                                </lightning-formatted-text>
+                            </dd>
+
+                            <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                                PayPal Order ID:
+                            </dt>
+                            <dd class="slds-item_detail slds-truncate">
+                                <lightning-formatted-text 
+                                    value={paymentData.PayPal_Order_ID__c}>
+                                </lightning-formatted-text>
+                            </dd>
+
+                            <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                                Amount:
+                            </dt>
+                            <dd class="slds-item_detail slds-truncate">
+                                <span class="amount-text">{formattedAmount}</span>
+                            </dd>
+
+                            <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                                Payment Method:
+                            </dt>
+                            <dd class="slds-item_detail slds-truncate">
+                                <lightning-formatted-text 
+                                    value={paymentData.Payment_Method__c}>
+                                </lightning-formatted-text>
+                            </dd>
+                        </dl>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <dl class="slds-list_horizontal slds-wrap">
+                            <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                                Created Date:
+                            </dt>
+                            <dd class="slds-item_detail slds-truncate">
+                                {formattedDate}
+                            </dd>
+
+                            <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                                Last Modified:
+                            </dt>
+                            <dd class="slds-item_detail slds-truncate">
+                                {formattedLastModified}
+                            </dd>
+
+                            <dt class="slds-item_label slds-text-color_weak slds-truncate">
+                                Status:
+                            </dt>
+                            <dd class="slds-item_detail slds-truncate">
+                                <lightning-formatted-text 
+                                    value={paymentData.Status__c}>
+                                </lightning-formatted-text>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="slds-m-top_large">
+                    <div class="slds-button-group">
+                        <lightning-button
+                            label="Refresh Status"
+                            onclick={refreshPaymentStatus}
+                            variant="neutral"
+                            disabled={isLoading}>
+                        </lightning-button>
+
+                        <template if:true={canRefund}>
+                            <lightning-button
+                                label="Full Refund"
+                                onclick={handleRefundClick}
+                                variant="destructive"
+                                disabled={isRefunding}>
+                            </lightning-button>
+                        </template>
+
+                        <template if:true={canPartialRefund}>
+                            <lightning-button
+                                label="Partial Refund"
+                                onclick={handlePartialRefundClick}
+                                variant="neutral"
+                                disabled={isRefunding}>
+                            </lightning-button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Loading State -->
+        <template if:true={isLoading}>
+            <div class="slds-card__body slds-card__body_inner">
+                <lightning-spinner 
+                    alternative-text="Loading payment status..." 
+                    size="medium">
+                </lightning-spinner>
+            </div>
+        </template>
+
+        <!-- Error State -->
+        <template if:true={error}>
+            <div class="slds-card__body slds-card__body_inner">
+                <div class="slds-notify slds-notify_alert slds-theme_error" role="alert">
+                    <span class="slds-assistive-text">Error</span>
+                    <lightning-icon 
+                        icon-name="utility:error" 
+                        alternative-text="Error" 
+                        size="x-small" 
+                        class="slds-m-right_x-small">
+                    </lightning-icon>
+                    Unable to load payment status. Please try again.
+                </div>
+            </div>
+        </template>
+
+        <!-- No Data State -->
+        <template if:false={paymentData}>
+            <template if:false={isLoading}>
+                <template if:false={error}>
+                    <div class="slds-card__body slds-card__body_inner">
+                        <div class="slds-notify slds-notify_alert slds-theme_info" role="alert">
+                            <span class="slds-assistive-text">Info</span>
+                            <lightning-icon 
+                                icon-name="utility:info" 
+                                alternative-text="Info" 
+                                size="x-small" 
+                                class="slds-m-right_x-small">
+                            </lightning-icon>
+                            No payment data found for the provided order ID.
+                        </div>
+                    </div>
+                </template>
+            </template>
+        </template>
+    </lightning-card>
+
+    <!-- Refund Modal -->
+    <template if:true={showRefundModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeRefundModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-modal__title slds-hyphenate">Process Refund</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="refund-amount">
+                            Refund Amount ({paymentData.Currency_Code__c})
+                        </label>
+                        <div class="slds-form-element__control">
+                            <lightning-input
+                                type="number"
+                                step="0.01"
+                                min="0.01"
+                                max={maxRefundAmount}
+                                value={refundAmount}
+                                onchange={handleRefundAmountChange}
+                                field-level-help="Enter the amount to refund (maximum: {formattedAmount})"
+                                required>
+                            </lightning-input>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-m-top_small">
+                        <p class="slds-text-body_small slds-text-color_weak">
+                            Original payment amount: {formattedAmount}
+                        </p>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button
+                        label="Cancel"
+                        onclick={closeRefundModal}
+                        variant="neutral">
+                    </lightning-button>
+                    <lightning-button
+                        label="Process Refund"
+                        onclick={processRefund}
+                        variant="brand"
+                        disabled={isRefunding}
+                        class="slds-m-left_x-small">
+                    </lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

@@ -1,0 +1,54 @@
+.paypal-button-container {
+    min-height: 150px;
+    width: 100%;
+}
+
+.payment-summary {
+    border-radius: 0.25rem;
+    padding: 1rem;
+    background-color: var(--slds-g-color-neutral-base-95, #fafafb);
+    border: 1px solid var(--slds-g-color-border-base-4, #c9c7c5);
+}
+
+.payment-summary h3 {
+    color: var(--slds-g-color-neutral-base-10, #181818);
+}
+
+.slds-notify_alert {
+    margin-bottom: 1rem;
+}
+
+.slds-card__body {
+    padding: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .paypal-button-container {
+        min-height: 120px;
+    }
+    
+    .slds-card__body {
+        padding: 1rem;
+    }
+}
+
+/* PayPal button customization */
+.paypal-button-container iframe {
+    border-radius: 0.25rem;
+}
+
+/* Loading state */
+.slds-spinner_container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+/* Form validation styles */
+.slds-has-error .slds-input,
+.slds-has-error .slds-select {
+    border-color: var(--slds-g-color-error-base-40, #ea001e);
+    box-shadow: 0 0 3px #ea001e;
+}

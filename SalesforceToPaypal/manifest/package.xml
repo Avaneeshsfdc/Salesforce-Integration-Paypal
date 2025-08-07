@@ -1,36 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
-        <members>*</members>
+        <members>PayPalAuthManager</members>
+        <members>PayPalException</members>
+        <members>PayPalHttpCallout</members>
+        <members>PayPalService</members>
+        <members>PayPalWebhookHandler</members>
+        <members>PaymentProcessor</members>
         <name>ApexClass</name>
     </types>
     <types>
-        <members>*</members>
-        <name>ApexComponent</name>
+        <members>PayPal_Configuration</members>
+        <name>CustomMetadata</name>
     </types>
     <types>
-        <members>*</members>
-        <name>ApexPage</name>
+        <members>Payment_Transaction__c</members>
+        <members>PayPal_Error_Log__c</members>
+        <members>PayPal_Webhook_Log__c</members>
+        <members>PayPal_Configuration__mdt</members>
+        <name>CustomObject</name>
     </types>
     <types>
-        <members>*</members>
-        <name>ApexTestSuite</name>
-    </types>
-    <types>
-        <members>*</members>
-        <name>ApexTrigger</name>
-    </types>
-    <types>
-        <members>*</members>
-        <name>AuraDefinitionBundle</name>
-    </types>
-    <types>
-        <members>*</members>
+        <members>paymentForm</members>
+        <members>paymentHistory</members>
+        <members>paymentStatus</members>
         <name>LightningComponentBundle</name>
     </types>
     <types>
-        <members>*</members>
-        <name>StaticResource</name>
+        <members>PayPal_API</members>
+        <name>NamedCredential</name>
+    </types>
+    <types>
+        <members>PayPal_Integration_Access</members>
+        <name>PermissionSet</name>
     </types>
     <version>61.0</version>
 </Package>

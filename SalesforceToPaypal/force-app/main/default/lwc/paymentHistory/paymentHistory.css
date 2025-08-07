@@ -1,0 +1,109 @@
+.summary-container {
+    border-radius: 0.25rem;
+    padding: 1rem;
+}
+
+.summary-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--slds-g-color-neutral-base-30, #706e6b);
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--slds-g-color-neutral-base-10, #181818);
+}
+
+.stat-amount {
+    color: var(--slds-g-color-success-base-50, #2e844a);
+}
+
+.filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: end;
+}
+
+/* Data table styling */
+.amount-cell {
+    font-weight: bold;
+}
+
+/* Status colors */
+.slds-text-color_success {
+    color: var(--slds-g-color-success-base-50, #2e844a) !important;
+    font-weight: bold;
+}
+
+.slds-text-color_error {
+    color: var(--slds-g-color-error-base-40, #ea001e) !important;
+    font-weight: bold;
+}
+
+.slds-text-color_warning {
+    color: var(--slds-g-color-warning-base-60, #fe9339) !important;
+    font-weight: bold;
+}
+
+.slds-text-color_default {
+    color: var(--slds-g-color-neutral-base-30, #706e6b) !important;
+    font-weight: bold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .summary-stat {
+        margin-bottom: 1rem;
+    }
+    
+    .stat-value {
+        font-size: 1.25rem;
+    }
+    
+    .filter-actions {
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+}
+
+/* Empty state styling */
+.slds-align_absolute-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slds-text-align_center h3 {
+    margin-bottom: 0.5rem;
+}
+
+.slds-text-align_center p {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Loading spinner container */
+.slds-spinner_container {
+    position: relative;
+}
+
+/* Button group spacing */
+.lightning-button-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+@media (max-width: 480px) {
+    .lightning-button-group {
+        flex-direction: column;
+    }
+}

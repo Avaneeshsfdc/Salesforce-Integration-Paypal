@@ -1,0 +1,71 @@
+.status-badge {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.amount-text {
+    font-size: 1.125rem;
+    font-weight: bold;
+    color: var(--slds-g-color-success-base-50, #2e844a);
+}
+
+.slds-list_horizontal dt {
+    width: 35%;
+    margin-bottom: 0.5rem;
+}
+
+.slds-list_horizontal dd {
+    width: 65%;
+    margin-bottom: 0.5rem;
+}
+
+.slds-modal__container {
+    max-width: 32rem;
+}
+
+.slds-button-group .slds-button {
+    margin-right: 0.5rem;
+}
+
+.slds-button-group .slds-button:last-child {
+    margin-right: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .slds-list_horizontal dt {
+        width: 100%;
+        font-weight: bold;
+    }
+    
+    .slds-list_horizontal dd {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    .slds-button-group {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .slds-button-group .slds-button {
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+    }
+    
+    .slds-button-group .slds-button:last-child {
+        margin-bottom: 0;
+    }
+}
+
+/* Status-specific styling */
+.slds-badge {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.75rem;
+}
+
+/* Loading states */
+.slds-spinner_container {
+    min-height: 200px;
+}

@@ -1,0 +1,166 @@
+<template>
+    <lightning-card title="Payment History" icon-name="utility:money">
+        <div slot="actions">
+            <lightning-button-group>
+                <lightning-button
+                    label="Refresh"
+                    onclick={refreshData}
+                    disabled={isLoading}
+                    icon-name="utility:refresh">
+                </lightning-button>
+                <lightning-button
+                    label="Export CSV"
+                    onclick={exportToCSV}
+                    disabled={isLoading}
+                    icon-name="utility:download">
+                </lightning-button>
+            </lightning-button-group>
+        </div>
+
+        <div class="slds-card__body slds-card__body_inner">
+            <!-- Filters and Summary -->
+            <div class="slds-grid slds-gutters slds-wrap slds-m-bottom_medium">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                    <lightning-input
+                        label="Search Payments"
+                        type="search"
+                        value={searchTerm}
+                        onchange={handleSearchChange}
+                        placeholder="Search by transaction number, order ID...">
+                    </lightning-input>
+                </div>
+
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                    <lightning-combobox
+                        label="Filter by Status"
+                        value={statusFilter}
+                        options={statusOptions}
+                        onchange={handleStatusFilterChange}>
+                    </lightning-combobox>
+                </div>
+
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                    <div class="filter-actions slds-m-top_large">
+                        <lightning-button
+                            label="Clear Filters"
+                            onclick={clearFilters}
+                            variant="neutral"
+                            size="small">
+                        </lightning-button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Stats -->
+            <template if:true={hasPayments}>
+                <div class="summary-container slds-box slds-theme_shade slds-m-bottom_medium">
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <div class="summary-stat">
+                                <span class="stat-label">Total Payments</span>
+                                <span class="stat-value">{totalPayments}</span>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <div class="summary-stat">
+                                <span class="stat-label">Filtered Results</span>
+                                <span class="stat-value">{filteredCount}</span>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <div class="summary-stat">
+                                <span class="stat-label">Total Amount (Filtered)</span>
+                                <span class="stat-value stat-amount">{totalAmount}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Data Table -->
+            <template if:true={hasPayments}>
+                <lightning-datatable
+                    key-field="Id"
+                    data={filteredPayments}
+                    columns={columns}
+                    sorted-by={sortedBy}
+                    sorted-direction={sortedDirection}
+                    onsort={handleSort}
+                    onrowaction={handleRowAction}
+                    hide-checkbox-column="true"
+                    show-row-number-column="true"
+                    resize-column-disabled="false"
+                    min-column-width="120">
+                </lightning-datatable>
+            </template>
+
+            <!-- Loading State -->
+            <template if:true={isLoading}>
+                <div class="slds-align_absolute-center" style="height: 200px;">
+                    <lightning-spinner 
+                        alternative-text="Loading payment history..." 
+                        size="medium">
+                    </lightning-spinner>
+                </div>
+            </template>
+
+            <!-- No Data State -->
+            <template if:false={hasPayments}>
+                <template if:false={isLoading}>
+                    <template if:false={error}>
+                        <div class="slds-align_absolute-center" style="height: 200px;">
+                            <div class="slds-text-align_center">
+                                <lightning-icon 
+                                    icon-name="utility:inbox" 
+                                    size="large" 
+                                    class="slds-m-bottom_small">
+                                </lightning-icon>
+                                <h3 class="slds-text-heading_small">No Payment History Found</h3>
+                                <p class="slds-text-body_regular slds-text-color_weak">
+                                    <template if:true={searchTerm}>
+                                        No payments match your current filters.
+                                    </template>
+                                    <template if:false={searchTerm}>
+                                        This account doesn't have any payment transactions yet.
+                                    </template>
+                                </p>
+                                <template if:true={searchTerm}>
+                                    <lightning-button
+                                        label="Clear Filters"
+                                        onclick={clearFilters}
+                                        variant="neutral"
+                                        class="slds-m-top_small">
+                                    </lightning-button>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </template>
+            </template>
+
+            <!-- Error State -->
+            <template if:true={error}>
+                <div class="slds-align_absolute-center" style="height: 200px;">
+                    <div class="slds-text-align_center">
+                        <lightning-icon 
+                            icon-name="utility:error" 
+                            size="large" 
+                            variant="error"
+                            class="slds-m-bottom_small">
+                        </lightning-icon>
+                        <h3 class="slds-text-heading_small">Unable to Load Payment History</h3>
+                        <p class="slds-text-body_regular slds-text-color_weak">
+                            There was an error loading the payment data. Please try again.
+                        </p>
+                        <lightning-button
+                            label="Try Again"
+                            onclick={refreshData}
+                            variant="brand"
+                            class="slds-m-top_small">
+                        </lightning-button>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

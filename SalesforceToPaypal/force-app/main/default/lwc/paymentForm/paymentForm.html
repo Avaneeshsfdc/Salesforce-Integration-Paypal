@@ -1,0 +1,132 @@
+<template>
+    <lightning-card title="PayPal Payment" icon-name="utility:payment_gateway">
+        <div class="slds-card__body slds-card__body_inner">
+            <template if:false={isPayPalReady}>
+                <div class="slds-notify slds-notify_alert slds-theme_warning" role="alert">
+                    <span class="slds-assistive-text">Warning</span>
+                    <lightning-icon icon-name="utility:warning" alternative-text="Warning" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                    PayPal integration is not properly configured or authenticated.
+                </div>
+            </template>
+
+            <template if:true={authStatus.isAuthenticated}>
+                <div class="slds-notify slds-notify_alert slds-theme_success" role="alert">
+                    <span class="slds-assistive-text">Success</span>
+                    <lightning-icon icon-name="utility:success" alternative-text="Success" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                    PayPal connection established successfully.
+                </div>
+            </template>
+
+            <div class="slds-grid slds-gutters slds-wrap">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                    <lightning-input
+                        label="Payment Amount"
+                        type="number"
+                        step="0.01"
+                        min="0.01"
+                        max="10000"
+                        value={amount}
+                        onchange={handleAmountChange}
+                        field-level-help="Enter the payment amount (minimum $0.01)"
+                        required>
+                    </lightning-input>
+                </div>
+
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                    <lightning-combobox
+                        label="Currency"
+                        value={currencyCode}
+                        options={currencyOptions}
+                        onchange={handleCurrencyChange}
+                        required>
+                    </lightning-combobox>
+                </div>
+
+                <div class="slds-col slds-size_1-of-1">
+                    <lightning-input
+                        label="Payment Description"
+                        type="text"
+                        value={description}
+                        onchange={handleDescriptionChange}
+                        maxlength="127"
+                        field-level-help="Brief description of the payment purpose"
+                        required>
+                    </lightning-input>
+                </div>
+            </div>
+
+            <template if:true={recordId}>
+                <div class="slds-m-top_small">
+                    <p class="slds-text-body_regular">
+                        <strong>Account:</strong> {accountName}
+                    </p>
+                </div>
+            </template>
+
+            <template if:true={isFormValid}>
+                <div class="slds-m-top_medium">
+                    <div class="payment-summary slds-box slds-theme_shade">
+                        <h3 class="slds-text-heading_small slds-m-bottom_small">Payment Summary</h3>
+                        <div class="slds-grid">
+                            <div class="slds-col slds-size_1-of-2">
+                                <p class="slds-text-body_regular">
+                                    <strong>Amount:</strong>
+                                </p>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-text-align_right">
+                                <p class="slds-text-body_regular">
+                                    {currencyCode} {amount}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="slds-grid">
+                            <div class="slds-col slds-size_1-of-2">
+                                <p class="slds-text-body_regular">
+                                    <strong>Description:</strong>
+                                </p>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-text-align_right">
+                                <p class="slds-text-body_regular">
+                                    {description}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <template if:true={showPayPalButtons}>
+                <div class="slds-m-top_medium">
+                    <h3 class="slds-text-heading_small slds-m-bottom_small">Complete Payment</h3>
+                    <div data-id="paypal-button-container" class="paypal-button-container"></div>
+                </div>
+            </template>
+
+            <template if:true={isLoading}>
+                <div class="slds-m-top_medium">
+                    <lightning-spinner alternative-text={loadingMessage} size="medium"></lightning-spinner>
+                    <p class="slds-text-align_center slds-m-top_small">{loadingMessage}</p>
+                </div>
+            </template>
+
+            <template if:false={isFormValid}>
+                <div class="slds-m-top_medium">
+                    <div class="slds-notify slds-notify_alert slds-theme_info" role="alert">
+                        <span class="slds-assistive-text">Info</span>
+                        <lightning-icon icon-name="utility:info" alternative-text="Info" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                        Please fill in all required fields to continue with payment.
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <div slot="actions">
+            <lightning-button
+                label="Reset Form"
+                onclick={resetForm}
+                variant="neutral"
+                class="slds-m-right_x-small">
+            </lightning-button>
+        </div>
+    </lightning-card>
+</template>

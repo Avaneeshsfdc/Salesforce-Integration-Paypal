@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Error_Type__c</fullName>
+    <description>Type of error encountered</description>
+    <label>Error Type</label>
+    <required>true</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>API_ERROR</fullName>
+                <default>true</default>
+                <label>API Error</label>
+            </value>
+            <value>
+                <fullName>AUTHENTICATION_ERROR</fullName>
+                <default>false</default>
+                <label>Authentication Error</label>
+            </value>
+            <value>
+                <fullName>VALIDATION_ERROR</fullName>
+                <default>false</default>
+                <label>Validation Error</label>
+            </value>
+            <value>
+                <fullName>NETWORK_ERROR</fullName>
+                <default>false</default>
+                <label>Network Error</label>
+            </value>
+            <value>
+                <fullName>SYSTEM_ERROR</fullName>
+                <default>false</default>
+                <label>System Error</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
