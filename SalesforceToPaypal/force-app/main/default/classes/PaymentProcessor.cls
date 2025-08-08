@@ -16,16 +16,15 @@ public with sharing class PaymentProcessor {
         public String currencyCode;
         public String description;
         public Id recordId;
-        public PaymentIntent intent;
+        public PaymentIntent intent = PaymentIntent.CAPTURE;
         public PaymentType paymentType;
         public String returnUrl;
         public String cancelUrl;
         public Map<String, Object> customData;
         
         public PaymentRequest() {
-            this.intent = PaymentIntent.CAPTURE;
-            this.paymentType = PaymentType.ONE_TIME;
             this.customData = new Map<String, Object>();
+            // Initialize payment type - will be set by caller or use helper method
         }
     }
     
@@ -40,6 +39,12 @@ public with sharing class PaymentProcessor {
         public PaymentResult() {
             this.success = false;
         }
+    }
+    
+    public static PaymentRequest createOneTimePaymentRequest() {
+        PaymentRequest request = new PaymentRequest();
+        request.paymentType = PaymentType.ONE_TIME;
+        return request;
     }
     
     public static PaymentResult processPayment(PaymentRequest request) {

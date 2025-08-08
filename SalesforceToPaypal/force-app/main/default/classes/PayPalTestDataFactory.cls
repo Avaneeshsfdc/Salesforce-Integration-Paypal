@@ -18,7 +18,7 @@ public class PayPalTestDataFactory {
     }
     
     public static Payment_Transaction__c createTestTransaction(Id accountId) {
-        Payment_Transaction__c transaction = new Payment_Transaction__c(
+        Payment_Transaction__c paymentTransaction = new Payment_Transaction__c(
             PayPal_Order_ID__c = 'TEST_ORDER_' + System.currentTimeMillis(),
             Amount__c = 100.00,
             Currency_Code__c = 'USD',
@@ -27,16 +27,16 @@ public class PayPalTestDataFactory {
             Payment_Method__c = 'Credit Card',
             PayPal_Response__c = createMockPayPalResponse()
         );
-        insert transaction;
-        return transaction;
+        insert paymentTransaction;
+        return paymentTransaction;
     }
     
     public static Payment_Transaction__c createCompletedTransaction() {
-        Payment_Transaction__c transaction = createTestTransaction();
-        transaction.Status__c = 'Completed';
-        transaction.PayPal_Response__c = createMockCaptureResponse();
-        update transaction;
-        return transaction;
+        Payment_Transaction__c paymentTransaction = createTestTransaction();
+        paymentTransaction.Status__c = 'Completed';
+        paymentTransaction.PayPal_Response__c = createMockCaptureResponse();
+        update paymentTransaction;
+        return paymentTransaction;
     }
     
     public static PayPal_Error_Log__c createErrorLog() {

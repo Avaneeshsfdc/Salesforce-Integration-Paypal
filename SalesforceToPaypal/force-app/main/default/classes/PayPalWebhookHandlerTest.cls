@@ -15,12 +15,11 @@ public class PayPalWebhookHandlerTest {
         request.requestURI = '/services/apexrest/paypal/webhook/';
         request.httpMethod = 'POST';
         request.requestBody = Blob.valueOf(PayPalTestDataFactory.createMockWebhookData());
-        request.headers = new Map<String, String>{
-            'PAYPAL-TRANSMISSION-SIG' => 'test-signature',
-            'PAYPAL-CERT-ID' => 'test-cert-id',
-            'PAYPAL-AUTH-ALGO' => 'SHA256withRSA',
-            'PAYPAL-TRANSMISSION-TIME' => '2024-01-01T00:00:00Z'
-        };
+        // Set headers using put method to avoid reassignment issues
+        request.headers.put('PAYPAL-TRANSMISSION-SIG', 'test-signature');
+        request.headers.put('PAYPAL-CERT-ID', 'test-cert-id');
+        request.headers.put('PAYPAL-AUTH-ALGO', 'SHA256withRSA');
+        request.headers.put('PAYPAL-TRANSMISSION-TIME', '2024-01-01T00:00:00Z');
         
         RestResponse response = new RestResponse();
         RestContext.request = request;
@@ -47,7 +46,7 @@ public class PayPalWebhookHandlerTest {
         request.requestURI = '/services/apexrest/paypal/webhook/';
         request.httpMethod = 'POST';
         request.requestBody = Blob.valueOf(PayPalTestDataFactory.createMockWebhookData());
-        request.headers = new Map<String, String>(); // Missing required headers
+        // No headers set - missing required headers for test
         
         RestResponse response = new RestResponse();
         RestContext.request = request;
@@ -70,12 +69,10 @@ public class PayPalWebhookHandlerTest {
         request.requestURI = '/services/apexrest/paypal/webhook/';
         request.httpMethod = 'POST';
         request.requestBody = Blob.valueOf('{"invalid": "json"}'); // Invalid webhook format
-        request.headers = new Map<String, String>{
-            'PAYPAL-TRANSMISSION-SIG' => 'test-signature',
-            'PAYPAL-CERT-ID' => 'test-cert-id',
-            'PAYPAL-AUTH-ALGO' => 'SHA256withRSA',
-            'PAYPAL-TRANSMISSION-TIME' => '2024-01-01T00:00:00Z'
-        };
+        request.headers.put('PAYPAL-TRANSMISSION-SIG', 'test-signature');
+        request.headers.put('PAYPAL-CERT-ID', 'test-cert-id');
+        request.headers.put('PAYPAL-AUTH-ALGO', 'SHA256withRSA');
+        request.headers.put('PAYPAL-TRANSMISSION-TIME', '2024-01-01T00:00:00Z');
         
         RestResponse response = new RestResponse();
         RestContext.request = request;

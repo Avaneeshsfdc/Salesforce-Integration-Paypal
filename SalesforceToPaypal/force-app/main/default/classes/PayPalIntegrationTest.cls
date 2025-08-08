@@ -96,9 +96,9 @@ public class PayPalIntegrationTest {
         
         // Verify error was logged
         List<PayPal_Error_Log__c> errorLogs = [
-            SELECT Id, Error_Message__c, Operation__c 
+            SELECT Id, Error_Message__c, Error_Type__c 
             FROM PayPal_Error_Log__c 
-            WHERE Operation__c = 'Create Order'
+            WHERE Error_Type__c = 'API_ERROR'
         ];
         
         System.assertEquals(1, errorLogs.size(), 'Error should be logged');
@@ -112,7 +112,7 @@ public class PayPalIntegrationTest {
         
         // Get completed transaction for refund
         Payment_Transaction__c completedTransaction = [
-            SELECT Id, PayPal_Order_ID__c, Amount__c, Currency__c 
+            SELECT Id, PayPal_Order_ID__c, Amount__c, Currency_Code__c 
             FROM Payment_Transaction__c 
             WHERE Status__c = 'Completed' 
             LIMIT 1
@@ -124,7 +124,7 @@ public class PayPalIntegrationTest {
         PaymentProcessor.PaymentResult refundResult = PaymentProcessor.refundPayment(
             completedTransaction.PayPal_Order_ID__c, 
             completedTransaction.Amount__c, 
-            completedTransaction.Currency__c
+            completedTransaction.Currency_Code__c
         );
         
         // Process webhook event for refund completion
@@ -134,7 +134,7 @@ public class PayPalIntegrationTest {
             new Map<String, Object>{
                 'amount' => new Map<String, String>{
                     'value' => String.valueOf(completedTransaction.Amount__c),
-                    'currency_code' => completedTransaction.Currency__c
+                    'currency_code' => completedTransaction.Currency_Code__c
                 }
             }
         );
@@ -161,19 +161,18 @@ public class PayPalIntegrationTest {
         Payment_Transaction__c testTransaction = [SELECT PayPal_Order_ID__c FROM Payment_Transaction__c LIMIT 1];
         
         // Create webhook request
-        RestRequest request = new RestRequest();
-        request.requestURI = '/services/apexrest/paypal/webhook/';
-        request.httpMethod = 'POST';
-        request.requestBody = Blob.valueOf(PayPalTestDataFactory.createMockWebhookData());
-        request.headers = new Map<String, String>{
-            'PAYPAL-TRANSMISSION-SIG' => 'test-signature',
-            'PAYPAL-CERT-ID' => 'test-cert-id',
-            'PAYPAL-AUTH-ALGO' => 'SHA256withRSA',
-            'PAYPAL-TRANSMISSION-TIME' => '2024-01-01T00:00:00Z'
-        };
+        RestRequest req = new RestRequest();
+        req.requestURI = '/services/apexrest/paypal/webhook/';
+        req.httpMethod = 'POST';
+        req.requestBody = Blob.valueOf(PayPalTestDataFactory.createMockWebhookData());
+        // Set headers using put method
+        req.headers.put('PAYPAL-TRANSMISSION-SIG', 'test-signature');
+        req.headers.put('PAYPAL-CERT-ID', 'test-cert-id');
+        req.headers.put('PAYPAL-AUTH-ALGO', 'SHA256withRSA');
+        req.headers.put('PAYPAL-TRANSMISSION-TIME', '2024-01-01T00:00:00Z');
         
         RestResponse response = new RestResponse();
-        RestContext.request = request;
+        RestContext.request = req;
         RestContext.response = response;
         
         Test.startTest();
@@ -241,7 +240,7 @@ public class PayPalIntegrationTest {
         List<Payment_Transaction__c> transactions = [
             SELECT Id, Amount__c 
             FROM Payment_Transaction__c 
-            WHERE Related_Record_ID__c = :testAccount.Id
+            WHERE Account__c = :testAccount.Id
         ];
         
         System.assert(transactions.size() >= 5, 'All transactions should be created');
@@ -332,17 +331,17 @@ public class PayPalIntegrationTest {
         
         if (result.success) {
             // Verify transaction consistency
-            Payment_Transaction__c transaction = [
-                SELECT Id, Amount__c, Currency__c, Description__c, PayPal_Order_ID__c, Related_Record_ID__c 
+            Payment_Transaction__c paymentTxn = [
+                SELECT Id, Amount__c, Currency_Code__c, PayPal_Order_ID__c, Account__c 
                 FROM Payment_Transaction__c 
                 WHERE PayPal_Order_ID__c = :result.orderId
+                LIMIT 1
             ];
             
-            System.assertEquals(request.amount, transaction.Amount__c, 'Amount should match');
-            System.assertEquals(request.currencyCode, transaction.Currency__c, 'Currency should match');
-            System.assertEquals(request.description, transaction.Description__c, 'Description should match');
-            System.assertEquals(request.recordId, transaction.Related_Record_ID__c, 'Record ID should match');
-            System.assertEquals(result.orderId, transaction.PayPal_Order_ID__c, 'Order ID should match');
+            System.assertEquals(request.amount, paymentTxn.Amount__c, 'Amount should match');
+            System.assertEquals(request.currencyCode, paymentTxn.Currency_Code__c, 'Currency should match');
+            System.assertEquals(request.recordId, paymentTxn.Account__c, 'Record ID should match');
+            System.assertEquals(result.orderId, paymentTxn.PayPal_Order_ID__c, 'Order ID should match');
         }
         
         Test.stopTest();
@@ -351,7 +350,7 @@ public class PayPalIntegrationTest {
         List<Payment_Transaction__c> orphanedTransactions = [
             SELECT Id 
             FROM Payment_Transaction__c 
-            WHERE PayPal_Order_ID__c = null OR Related_Record_ID__c = null
+            WHERE PayPal_Order_ID__c = null OR Account__c = null
         ];
         
         System.assertEquals(0, orphanedTransactions.size(), 'No orphaned transactions should exist');

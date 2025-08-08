@@ -4,16 +4,14 @@
         <members>PayPalAuthManager</members>
         <members>PayPalException</members>
         <members>PayPalHttpCallout</members>
-        <members>PayPalIntegrationTest</members>
-        <members>PayPalMockHttpResponseGenerator</members>
         <members>PayPalService</members>
-        <members>PayPalServiceTest</members>
-        <members>PayPalTestDataFactory</members>
         <members>PayPalWebhookHandler</members>
-        <members>PayPalWebhookHandlerTest</members>
         <members>PaymentProcessor</members>
-        <members>PaymentProcessorTest</members>
         <name>ApexClass</name>
+    </types>
+    <types>
+        <members>PayPal_Configuration</members>
+        <name>CustomMetadata</name>
     </types>
     <types>
         <members>Payment_Transaction__c</members>

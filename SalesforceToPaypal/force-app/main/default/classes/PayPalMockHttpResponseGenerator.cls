@@ -81,8 +81,8 @@ public class PayPalMockHttpResponseGenerator implements HttpCalloutMock {
         response.setStatusCode(this.statusCode);
         response.setBody(this.responseBody);
         
-        // Simulate different response times
-        if (responseType == ResponseType.ERROR_NETWORK) {
+        // Simulate different response times based on status code
+        if (this.statusCode == 503) {
             // Simulate timeout scenario
             response.setStatusCode(503);
         }
